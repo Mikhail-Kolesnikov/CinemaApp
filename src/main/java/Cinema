@@ -1,0 +1,47 @@
+Задание: написать приложение для хранения данных о списке дел (todo list)
+
+1. Функционал (то есть что программа делает?)
+2. Как мы храним данные (entity)
+3. Какие операции с данными мы будем совершать
+4. Список запросов, которые мы будем готовы обслуживать
+
+1. Функционал (что программа делает?)
+Хранение информации о фильмах
+Добавление нового фильма
+Поиск всех фильмов
+Поиск фильма по ID
+Поиск фильмов по названию
+Поиск фильмов по дате выхода (реализован, но пока возвращает пустой список)
+Удаления и обновления пока нет
+
+Как мы храним данные (Entity)
+Movie
+
+private Integer id;
+private String title;
+private LocalDate releaseDate;
+private String status;
+private String description;
+
+3. Какие операции с данными мы совершаем
+create — добавление нового фильма
+read — получение всех фильмов, поиск по ID, поиск по названию
+(read) — поиск по дате выхода (метод есть, но не реализован)
+update — пока не реализовано
+delete — пока не реализовано
+
+4. Список запросов, которые мы обслуживаем
+
+public MovieResponseDto addMovie(MovieRequestDto request)
+
+ список всех фильмов
+public List<Movie> findAll()
+
+ найти фильм по id
+public Optional<Movie> findById(Integer id)
+
+ найти фильмы по названию
+public List<Movie> findByTitle(String title)
+
+ найти фильмы по дате релиза (не реализован)
+public List<Movie> findByReleaseDate(LocalDate releaseDate)
