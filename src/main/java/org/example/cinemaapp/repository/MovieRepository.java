@@ -52,4 +52,9 @@ public class MovieRepository implements MovieRepositoryInMemory{
     public List<Movie> findByReleaseDate(LocalDate releaseDate) {
         return List.of();
     }
+    @Override
+    public void deleteById(Integer id) {
+        database.removeIf(movie -> movie.getId().equals(id));
+    }
+
 }

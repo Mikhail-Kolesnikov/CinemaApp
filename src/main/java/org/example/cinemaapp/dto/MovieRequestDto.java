@@ -12,5 +12,7 @@ public class MovieRequestDto {
     private String title;
     private String description;
     private LocalDate releaseDate;
+    private String genreName;
+
 }
 

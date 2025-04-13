@@ -13,5 +13,7 @@ public interface MovieRepositoryInMemory {
     public Optional<Movie> findById(Integer id);
     public List<Movie> findByTitle(String title);
     public List<Movie> findByReleaseDate(LocalDate releaseDate);
+    void deleteById(Integer id);
+
 
 }
