@@ -1,12 +1,13 @@
 package org.example.cinemaapp.controller;
 
+import jakarta.validation.Valid;
 import org.example.cinemaapp.dto.MovieRequestDto;
 import org.example.cinemaapp.dto.MovieResponseDto;
 import org.example.cinemaapp.service.MovieService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
+
 @RestController
 @RequestMapping("/movies")
 public class MovieController {
@@ -18,7 +19,7 @@ public class MovieController {
     }
 
     @PostMapping
-    public MovieResponseDto addMovie(@RequestBody MovieRequestDto request) {
+    public MovieResponseDto addMovie(@Valid @RequestBody MovieRequestDto request) {
         return service.addMovie(request);
     }
 
@@ -28,7 +29,7 @@ public class MovieController {
     }
 
     @GetMapping("/{id}")
-    public Optional<MovieResponseDto> findById(@PathVariable Integer id) {
+    public MovieResponseDto findById(@PathVariable Integer id) {
         return service.findById(id);
     }
 
@@ -41,5 +42,4 @@ public class MovieController {
     public void deleteById(@PathVariable Integer id) {
         service.deleteById(id);
     }
-
 }

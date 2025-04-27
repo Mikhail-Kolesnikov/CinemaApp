@@ -4,59 +4,69 @@ import org.example.cinemaapp.dto.MovieRequestDto;
 import org.example.cinemaapp.dto.MovieResponseDto;
 import org.example.cinemaapp.entity.Genre;
 import org.example.cinemaapp.entity.Movie;
+import org.example.cinemaapp.exception.NotFoundException;
+import org.example.cinemaapp.repository.GenreRepository;
 import org.example.cinemaapp.repository.MovieRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class MovieService {
-    private MovieRepository repository;
 
-    public MovieService(MovieRepository repository) {
-        this.repository = repository;
+    private final MovieRepository movieRepository;
+    private final GenreRepository genreRepository;
 
+    public MovieService(MovieRepository movieRepository, GenreRepository genreRepository) {
+        this.movieRepository = movieRepository;
+        this.genreRepository = genreRepository;
     }
 
     public MovieResponseDto addMovie(MovieRequestDto request) {
-        Movie movieForAdd = new Movie();
-        movieForAdd.setTitle(request.getTitle());
-        movieForAdd.setReleaseDate(request.getReleaseDate());
-        movieForAdd.setDescription(request.getDescription());
-        movieForAdd.setStatus("COMING_SOON");
 
-        Genre genre = new Genre(null, request.getGenreName());
-        movieForAdd.setGenre(genre);
+        Genre genre = genreRepository.findByName(request.getGenreName())
+                .orElseGet(() -> genreRepository.save(new Genre(null, request.getGenreName())));
 
-        Movie movieAfterSave = repository.add(movieForAdd);
+        Movie movie = new Movie();
+        movie.setTitle(request.getTitle());
+        movie.setReleaseDate(request.getReleaseDate());
+        movie.setDescription(request.getDescription());
+        movie.setStatus("COMING_SOON");
+        movie.setGenre(genre);
 
-        return new MovieResponseDto(movieAfterSave.getId(),
-                movieAfterSave.getTitle(),
-                movieAfterSave.getDescription(),
-                movieAfterSave.getReleaseDate(),
-                movieAfterSave.getStatus(),
-                movieAfterSave.getGenre().getName());
+        Movie saved = movieRepository.save(movie);
+
+        return convertToDto(saved);
     }
+
     public List<MovieResponseDto> findAll() {
-        return repository.findAll().stream()
+        return movieRepository.findAll().stream()
                 .map(this::convertToDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
-    public Optional<MovieResponseDto> findById(Integer id) {
-        return repository.findById(id)
-                .map(this::convertToDto);
+    public MovieResponseDto findById(Integer id) {
+        Movie movie = movieRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Movie not found with id " + id));
+        return convertToDto(movie);
     }
 
     public List<MovieResponseDto> findByTitle(String title) {
-        return repository.findByTitle(title).stream()
+        List<Movie> movies = movieRepository.findByTitle(title);
+        if (movies.isEmpty()) {
+            throw new NotFoundException("No movies found with title " + title);
+        }
+        return movies.stream()
                 .map(this::convertToDto)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public void deleteById(Integer id) {
-        repository.deleteById(id);
+        if (!movieRepository.existsById(id)) {
+            throw new NotFoundException("Cannot delete. Movie not found with id " + id);
+        }
+        movieRepository.deleteById(id);
     }
 
     private MovieResponseDto convertToDto(Movie movie) {

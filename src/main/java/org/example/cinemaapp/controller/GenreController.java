@@ -1,11 +1,11 @@
 package org.example.cinemaapp.controller;
 
+import jakarta.validation.Valid;
 import org.example.cinemaapp.dto.GenreDto;
 import org.example.cinemaapp.service.GenreService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/genres")
@@ -18,7 +18,7 @@ public class GenreController {
     }
 
     @PostMapping
-    public GenreDto addGenre(@RequestBody GenreDto dto) {
+    public GenreDto addGenre(@Valid @RequestBody GenreDto dto) {
         return service.addGenre(dto);
     }
 
@@ -28,12 +28,12 @@ public class GenreController {
     }
 
     @GetMapping("/{id}")
-    public Optional<GenreDto> findById(@PathVariable Integer id) {
+    public GenreDto findById(@PathVariable Integer id) {
         return service.findById(id);
     }
 
     @GetMapping("/search")
-    public Optional<GenreDto> findByName(@RequestParam String name) {
+    public GenreDto findByName(@RequestParam String name) {
         return service.findByName(name);
     }
 }
